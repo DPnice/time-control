@@ -1,0 +1,28 @@
+server:
+  port: 10021
+  servlet:
+    context-path: /control
+spring:
+  application:
+    name: time_control
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    jdbc-url: jdbc:mysql://49.233.131.191:3306/time_control?characterEncoding=utf8&serverTimezone=GMT%2B8
+    hikari:
+      connection-test-query: select 1
+      maximum-pool-size: 10
+      minimum-idle: 2
+    username: root
+    password: ChTYg3TJTYKQYk41
+
+appid: wx86f60901dd463818
+secret: 2acd2f28398475ef5ec02b4c82314db9
+
+
+logging:
+  level:
+    com.dpnice.control.timecontrol.dao.wll : debug
