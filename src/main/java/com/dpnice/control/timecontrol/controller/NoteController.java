@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,7 +34,7 @@ public class NoteController {
 
     @PostMapping("save")
     @ResponseBody
-    public String save(@RequestBody String json) throws JsonProcessingException {
+    public String save(@RequestBody String json) throws JsonProcessingException, ParseException {
 
         JsonNode jsonBody = objectMapper.readTree(json);
         String uuid = jsonBody.get("uuid").asText();
@@ -42,6 +43,7 @@ public class NoteController {
         JsonNode contentList = jsonBody.get("content");
 
         if (StringUtils.isBlank(uuid)) {
+            String date = jsonBody.get("date").asText();
             String uuidNew = UUID.randomUUID().toString();
             mapper.insert(Note.builder()
                     .uuid(uuidNew)
@@ -49,7 +51,7 @@ public class NoteController {
                     .wxOpenId(wxOpenId)
                     .completeCount(0)
                     .totalCount(contentList.size())
-                    .date(new Date())
+                    .date(df.parse(date))
                     .updateTime(new Date())
                     .build());
             return uuidNew;
@@ -122,7 +124,7 @@ public class NoteController {
         String right = df.format(instance.getTime());
 
         List<Note> notes = mapper.selectList(new QueryWrapper<Note>().lambda()
-                .eq(Note::getWxOpenId,wxOpenId)
+                .eq(Note::getWxOpenId, wxOpenId)
                 .ge(Note::getDate, left)
                 .lt(Note::getDate, right)
                 .orderByAsc(Note::getDate)
@@ -170,7 +172,7 @@ public class NoteController {
         String date = df.format(instance.getTime());
 
         Note note = mapper.selectOne(new QueryWrapper<Note>().lambda()
-                .eq(Note::getWxOpenId,wxOpenId)
+                .eq(Note::getWxOpenId, wxOpenId)
                 .eq(Note::getDate, date)
         );
 
@@ -186,7 +188,6 @@ public class NoteController {
         Arcbar1 arcbar1 = Arcbar1.builder().series(arcbar1List).build();
         map.put("arcbar1", arcbar1);
 
-//        return area;
         return map;
     }
 
