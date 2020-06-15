@@ -41,6 +41,9 @@ public class NoteController {
         String wxOpenId = jsonBody.get("wxOpenId").asText();
 
         JsonNode contentList = jsonBody.get("content");
+        Iterator<JsonNode> elements = contentList.elements();
+        List<JsonNode> jsonNodes = Lists.newArrayList(elements);
+        long complete = jsonNodes.stream().filter(n -> "0".equals(n.get("status").asText())).count();
 
         if (StringUtils.isBlank(uuid)) {
             String date = jsonBody.get("date").asText();
@@ -50,16 +53,13 @@ public class NoteController {
                     .content(objectMapper.writeValueAsString(contentList))
                     .wxOpenId(wxOpenId)
                     .completeCount(0)
+                    .undoneCount(contentList.size())
                     .totalCount(contentList.size())
                     .date(df.parse(date))
                     .updateTime(new Date())
                     .build());
             return uuidNew;
         } else {
-            Iterator<JsonNode> elements = contentList.elements();
-            List<JsonNode> jsonNodes = Lists.newArrayList(elements);
-
-            long complete = jsonNodes.stream().filter(n -> "0".equals(n.get("status").asText())).count();
 
             Note build = Note.builder()
                     .uuid(uuid)
