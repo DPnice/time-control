@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.text.DateFormat;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Objects;
 
 /**
@@ -91,7 +89,7 @@ public class LoginController {
     @ResponseBody
     public int plus(@RequestParam("wxOpenId") String wxOpenId) {
         User user = loginMapper.selectById(wxOpenId);
-        user.setGroupIntegral(user.getGroupIntegral() + 0.1f);
+        user.setGroupIntegral(user.getGroupIntegral() + getRandom());
         return loginMapper.updateById(user);
     }
 
@@ -99,11 +97,17 @@ public class LoginController {
     @ResponseBody
     public int reduce(@RequestParam("wxOpenId") String wxOpenId) {
         User user = loginMapper.selectById(wxOpenId);
-        user.setGroupIntegral(user.getGroupIntegral() - 0.1f);
+        user.setGroupIntegral(user.getGroupIntegral() - getRandom());
         return loginMapper.updateById(user);
     }
 
 
+    public float getRandom() {
+        int max = 3, min = 1;
+        float ran2 = (float) (Math.random() * (max - min) + min);
+        BigDecimal b = new BigDecimal(ran2);
+        return b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+    }
 
 
 }
